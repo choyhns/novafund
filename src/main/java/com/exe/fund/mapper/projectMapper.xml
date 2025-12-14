@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fund.project">
+
+<select id="maxNum" resultType="int">
+	select nvl(max(numPro),0) from project
+</select>
+
+<insert id="insertData" parameterType="com.exe.fund.dto.ProjectDTO">
+<selectKey keyProperty="numPro" resultType="int" order="BEFORE">
+       SELECT PROJECT_SEQ.NEXTVAL FROM dual
+</selectKey>
+	insert into project(numPro,userId,subject,categoryName,content,
+	startDate,endDate,goalAmount,hitCount,good) values (#{numPro},#{userId},#{subject},
+
+	#{categoryName},#{content},#{startDate},#{endDate},#{goalAmount},0,0)
+
+</insert>
+
+<select id="getDataCount" parameterType="map" resultType="int">
+	select nvl(count(*),0) from project
+	where categoryName like '%' || #{categoryName} || '%' and (
+	subject like '%' || #{searchValue} || '%' or
+	content like '%' || #{searchValue} || '%')
+</select>
+
+<update id="updateHitCount" parameterType="int">
+	update project set hitCount=hitCount+1 where numPro=#{numPro}
+</update>
+
+<select id="getReadData" parameterType="int" resultType="com.exe.fund.dto.ProjectDTO">
+	select numPro,userId,subject,categoryName,content,
+	startDate,endDate,goalAmount,hitCount,good,
+	to_char(created, 'YYYY-MM-DD') created,status from project where numPro=#{numPro}
+</select>
+
+<update id="updateData" parameterType="com.exe.fund.dto.ProjectDTO">
+	update project set subject=#{subject},categoryName=#{categoryName},startDate=#{startDate},
+	endDate=#{endDate},goalAmount=#{goalAmount},content=#{content} where numPro=#{numPro}
+</update>
+
+<delete id="deleteData" parameterType="int">
+	delete from project where numPro=#{numPro}
+</delete>
+
+<select id="getLists" parameterType="map" resultType="com.exe.fund.dto.ProjectDTO">
+	select * from (
+	select rownum rnum, data.* from (
+	select numPro,userId,subject,categoryName,content,startDate,endDate,status,
+	goalAmount,hitCount,good,to_char(created,'YYYY-MM-DD') created from project
+	where categoryName like '%' || #{categoryName} || '%' and (
+	subject like '%' || #{searchValue} || '%' or
+	content like '%' || #{searchValue} || '%') and status = #{status}
+	<choose>
+		<when test="sortType == 'good'">
+			order by good desc, created desc
+		</when>
+		
+		<when test="sortType == 'recommend'">
+			order by startDate desc
+		</when>
+		
+		<otherwise>
+			order by created desc
+		</otherwise>
+	</choose>
+	) data)
+<![CDATA[
+	where rnum>=#{start} and rnum<=#{end}
+]]>
+</select>
+
+<select id="findById" parameterType="String" resultType="com.exe.fund.dto.ProjectDTO">
+	select * from project where userId=#{userId}
+</select>
+
+<select id="wishlist" parameterType="String" resultType="com.exe.fund.dto.ProjectDTO">
+	select * from project where numPro in (select numPro from wishlist where 
+	userId=#{userId})
+</select>
+
+<update id="updateStatus" parameterType="map">
+	update project set status=#{status} where numPro=#{numPro}
+</update>
+
+<select id="getPendingLists" resultType="com.exe.fund.dto.ProjectDTO">
+	select * from project where status=0 order by created desc
+</select>
+
+<select id="getSuccessLists" resultType="com.exe.fund.dto.ProjectDTO">
+	select * from project where status=2 and <![CDATA[endDate<sysdate-7]]> order by endDate desc
+</select>
+
+<select id="getProgressLists" resultType="com.exe.fund.dto.ProjectDTO">
+	select * from project where status=1 order by endDate desc
+</select>
+
+<select id="getFailedLists" resultType="com.exe.fund.dto.ProjectDTO">
+	select * from project where status=-1 order by endDate desc
+</select>
+
+</mapper>

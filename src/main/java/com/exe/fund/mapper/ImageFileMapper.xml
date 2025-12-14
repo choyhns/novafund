@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+ 
+ <mapper namespace="com.fund.image">
+ 	<insert id="insertContentImage" parameterType="com.exe.fund.dto.ContentImageDTO">
+ 		insert into contentImage (numPro, saveName, originalName)
+ 		values (#{numPro}, #{saveName}, #{originalName})
+ 	</insert>
+ 
+ 	<insert id="insertMainImage" parameterType="com.exe.fund.dto.MainImageDTO">
+ 		insert into mainImage (numPro, saveName, originalName)
+ 		values (#{numPro}, #{saveName}, #{originalName})
+ 	</insert>
+
+	<select id="getContentImages" parameterType="int" resultType="com.exe.fund.dto.ContentImageDTO">
+		select * from contentImage where numPro = #{numPro}
+	
+	</select>
+	
+	<select id="getMainImages" parameterType="int" resultType="com.exe.fund.dto.MainImageDTO">
+		select * from mainImage where numPro = #{numPro}
+	</select>
+ 
+	<update id="updateContentImage" parameterType="com.exe.fund.dto.ContentImageDTO">
+		update contentImage set saveName=#{saveName},originalName=#{originalName}
+		where numPro=#{numPro}	
+	</update>
+	
+	<update id="updateMainImage" parameterType="com.exe.fund.dto.MainImageDTO">
+		update mainImage set saveName=#{saveName},originalName=#{originalName}
+		where numPro=#{numPro}	
+	</update>
+	
+	<select id="getMainImageBySaveNameAndNumPro" parameterType="map" resultType="com.exe.fund.dto.MainImageDTO">
+		select * from mainImage where numPro = #{numPro}
+		and saveName = #{saveName}	
+	</select>
+	
+	<select id="getContentImageBySaveNameAndNumPro" parameterType="map" resultType="com.exe.fund.dto.ContentImageDTO">
+		select * from contentImage where numPro = #{numPro}
+		and saveName = #{saveName}	
+	</select>
+	
+	<delete id="deleteMainImage" parameterType="map">
+		delete from mainImage where numPro = #{numPro} and saveName = #{saveName}
+	
+	</delete>
+ 
+ 	<delete id="deleteContentImage" parameterType="map">
+		delete from contentImage where numPro = #{numPro} and saveName = #{saveName}
+	
+	</delete>
+	
+	<delete id="deleteMainImagesAll" parameterType="int">
+		delete from mainImage where numPro = #{numPro}
+	</delete>
+	
+	<delete id="deleteContentImagesAll" parameterType="int">
+		delete from contentImage where numPro = #{numPro}
+	</delete>
+	
+	
+ </mapper>

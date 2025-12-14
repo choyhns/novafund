@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+ 
+ <mapper namespace="com.article">
+
+ 
+ 	<select id="getReadProject" parameterType="int" resultType="com.exe.fund.dto.ProjectDTO">
+  		select numPro, userId, subject,to_char(created,'YYYY-MM-DD') 
+  		as created, to_char(STARTDATE,'YYYY-MM-DD') startDate,
+  		 to_char(ENDDATE,'YYYY-MM-DD') endDate, goalAmount, hitCount, good,content
+  		 ,categoryName,status from project where numPro=#{numPro}
+  	</select>
+ 	
+ 	<update id="updateHitCount" parameterType="int">
+		update project set hitCount=hitCount+1 where numPro = #{numPro}
+ 	</update>
+ 	
+ 	<select id="getReadReviewLists" parameterType="map" resultType="com.exe.fund.dto.ReviewDTO">
+  		select * from (select rownum rnum ,data.* from (select numRev,numPro,userId,content,grade,saveFileName,originalFileName,
+  		to_char(created,'YYYY-MM-DD') as created,groupNum,depth,orderNo,parent from review where numPro = #{numPro}
+  		order by groupNum desc,orderNo asc ) data) 
+  		<![CDATA[
+  		where rnum >= #{start} and rnum <= #{end}
+  		]]>
+  	</select>
+  	
+  	<select id="getReadRewardLists" parameterType="int" resultType="com.exe.fund.dto.RewardDTO">
+  		select rewardId,numPro,rewardSubject,rewardContent,amount from reward where numPro = #{numPro}
+  		
+  	</select>
+  	
+  	<select id="getReadSponLists" parameterType="map" resultType="com.exe.fund.dto.SponAmountDTO">
+  		select sponNum,numPro,userId,amount,to_char(created,'YYYY-MM-DD') as created,
+  		ROUND(SYSDATE - created) AS daysAgo,paid from sponAmount where numPro = #{numPro} and paid=#{paid}
+  		 order by created desc 
+  	</select>
+  	
+  	 <insert id="insertReview" parameterType="com.exe.fund.dto.ReviewDTO">
+ 		insert into review (numRev,numPro,userId,content,grade,saveFileName,originalFileName,created,
+ 		groupNum,depth,orderNo,parent)
+ 		 values (#{numRev},#{numPro},#{userId},#{content},#{grade},#{saveFileName, 
+ 		 jdbcType=VARCHAR },#{originalFileName, jdbcType=VARCHAR},sysdate,
+ 		 #{groupNum},#{depth},#{orderNo},#{parent})
+ 	</insert>
+ 	
+ 	<update id="updateReview" parameterType="com.exe.fund.dto.ReviewDTO">
+ 		update review set content=#{content},grade=#{grade},saveFileName=#{saveFileName,jdbcType=VARCHAR},
+ 		originalFileName=#{originalFileName,jdbcType=VARCHAR},created=sysdate where numRev=#{numRev} 
+ 		and numPro=#{numPro} and userId=#{userId}
+ 	</update>
+ 	
+ 	
+ 	<delete id="deleteReview" parameterType="map">
+ 		
+ 		delete review where numRev in (select numRev from review start with numRev=#{numRev}
+ 		connect by prior numRev=parent) and numPro=#{numPro} and userId=#{userId}
+ 	
+ 	</delete>
+ 	
+  	
+  	<select id="getSponAmountSum" parameterType="map" resultType="int">
+  		select nvl(sum(amount),0) amount from sponAmount where numPro = #{numPro} and paid=#{paid}
+   	</select>
+   	
+   	<update id="increaseGood" parameterType="int">
+   		update project set good = good+1 where numPro = #{numPro}
+   	</update>
+   	
+   	<insert id="insertGood" parameterType="map">
+   		insert into good (numPro,userId) values (#{numPro},#{userId})
+   	</insert>
+   	
+   	<select id="searchGood" parameterType="map" resultType="int">
+   		select count(*) from good where userId=#{userId} and numPro = #{numPro}
+   	</select>
+   	
+   	<update id="decreaseGood" parameterType="int">
+   		update project set good = good - 1 where numPro = #{numPro}
+   	</update>
+   	
+   	<delete id="deleteGood" parameterType="map">
+		delete good where userId=#{userId} and numPro = #{numPro}
+   	</delete>
+   	
+   	<select id="getReadMainImageLists" parameterType="int" resultType="com.exe.fund.dto.MainImageDTO">
+		select numPro,saveName,originalName from mainImage where numPro=#{numPro}   		
+   	</select>
+   	
+   	<select id="getReadContentImageLists" parameterType="int" resultType="com.exe.fund.dto.ContentImageDTO">
+		select numPro,saveName,originalName from contentImage where numPro=#{numPro}   		
+   	</select>
+   	
+ 	<select id="getMaxNumReview" resultType="int">
+ 		select nvl(max(numRev),0) from review
+ 	</select>
+ 	
+ 	<select id="getMaxNumSpon" resultType="int">
+ 		select nvl(max(sponNum),0) from sponAmount
+ 	</select>
+ 	
+ 	<select id="getDataCount" resultType="int" parameterType="int">
+	select nvl(count(*),0) from review where numPro=#{numPro}
+	</select>
+	
+	<update id="updateOrderNo" parameterType="map">
+	update review set orderNo=orderNo+1
+	where groupNum=#{groupNum} and numPro=#{numPro} and orderNo>#{orderNo}
+	</update>
+	
+	<select id="getReviewData" parameterType="map" resultType="com.exe.fund.dto.ReviewDTO">
+		select numRev,numPro,userId,content,grade,saveFileName,originalFileName,
+  		to_char(created,'YYYY-MM-DD') as created,groupNum,depth,orderNo,parent from review
+  		where numRev=#{numRev} and numPro = #{numPro}
+	</select>
+	
+	<select id="getReviewGradeAVG" parameterType="int" resultType="double">
+		select nvl(round(avg(grade),2),0) as reviewAvg from REVIEW where DEPTH=0 and numPro=#{numPro}
+	</select>
+	
+ 	<select id="getRandomCategoryLists" resultType="com.exe.fund.dto.ProjectDTO" parameterType="map">
+  		
+  		 SELECT *
+  FROM (
+    SELECT * 
+    FROM project
+    WHERE CATEGORYNAME = #{categoryName}
+    <![CDATA[
+      AND numPro <> #{numPro}
+      
+    ORDER BY DBMS_RANDOM.VALUE
+  )
+  WHERE ROWNUM <= 6
+  ]]>
+ 	</select>
+ 	
+ 	<select id="getCategoryMainImage" parameterType="int" resultType="com.exe.fund.dto.MainImageDTO">
+ 		select numPro,saveName,originalName from mainImage where numPro=#{numPro} and rowNum=1
+ 	</select>
+		 	
+ 	<update id="insertOrDeleteWishlist" parameterType="map">
+ 		
+ 		<choose>
+ 			<when test="flag=='insert'">
+ 			
+ 				insert into wishlist (userId,numPro) values (#{userId},#{numPro})
+ 			</when>
+ 				
+ 			<otherwise > 
+ 				delete wishlist where userId=#{userId} and numPro=#{numPro}
+ 			</otherwise>
+ 		
+ 		</choose>
+ 		
+ 	</update>
+ 	
+ 	
+ 	<update id="insertAddress" parameterType="map">
+ 		update member set address = #{address} where userId=#{userId}
+ 	</update>
+ 	
+
+ 	<update id="updateCashPoint" parameterType="map">
+ 		update member set cashPoint=#{cashPoint} where userId = #{userId}
+ 	</update>
+ 	
+ 	<insert id="insertSpon" parameterType="map">
+		insert into sponAmount (userId,amount,numPro,sponNum,created,rewardId) values (#{userId},#{amount},#{numPro},#{sponNum},sysdate,#{rewardId})
+	</insert>
+ 	
+
+ 	<select id="goodLists" parameterType="String" resultType="int">
+ 		select numPro from good where userId = #{userId}
+ 	</select>
+ 	
+ 	<select id="getPointByUserId" parameterType="String" resultType="int">
+ 		select cashPoint from member where userId=#{userID}
+ 	</select>
+	
+	<delete id="deleteGoodByNumPro" parameterType="int">
+		delete good where numPro = #{numPro}
+   	</delete>
+ 	<delete id="deleteWishList" parameterType="int">
+		delete from wishList where numPro = #{numPro}
+
+	</delete>
+	<delete id="deleteReviewLists" parameterType="int">
+		delete from review where numPro = #{numPro}
+	</delete>
+ </mapper>
+
+  
+  
+  
+  
+  
+  

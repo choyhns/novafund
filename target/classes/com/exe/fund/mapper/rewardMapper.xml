@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper
+PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fund.reward">
+
+
+<insert id="insertData" parameterType="com.exe.fund.dto.RewardDTO">
+	insert into reward (numPro, rewardSubject, amount, rewardContent) 
+	values (#{numPro},#{rewardSubject},#{amount},#{rewardContent})
+</insert>
+
+<select id="getReadData" resultType="com.exe.fund.dto.RewardDTO" parameterType="int">
+		select * from reward where numPro = #{numPro}
+</select>
+
+<update id="updateData" parameterType="com.exe.fund.dto.RewardDTO">
+	update reward set rewardSubject=#{rewardSubject}, amount=#{amount},
+	rewardContent=#{rewardContent} where numPro=#{numPro} and rewardId = #{rewardId}
+</update>
+
+<delete id="deleteData" parameterType="int">
+	delete from reward where numPro=#{numPro}
+
+</delete>
+
+<insert id="insertReward" parameterType="com.exe.fund.dto.RewardDTO">
+    <!-- rewardId 시퀀스 -->
+    <selectKey keyProperty="rewardId" resultType="int" order="BEFORE">
+        SELECT REWARD_SEQ.NEXTVAL FROM dual
+    </selectKey>
+
+    INSERT INTO reward (rewardId, numPro, rewardSubject, amount, rewardContent)
+    VALUES (#{rewardId}, #{numPro}, #{rewardSubject}, #{amount}, #{rewardContent})
+</insert>
+
+<select id="getRewardData" parameterType="int" resultType="com.exe.fund.dto.RewardDTO">
+	select * from reward where rewardId = #{rewardId}
+</select>
+
+</mapper>
+

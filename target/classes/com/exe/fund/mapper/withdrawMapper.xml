@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fund.withdraw">
+
+	<select id="findByUserId" parameterType="String" resultType="com.exe.fund.dto.WithdrawDTO">
+		select * from withdraw where userId = #{userId} order by requestDate desc
+	</select>
+	
+	<select id="findByWithdrawId" parameterType="int" resultType="com.exe.fund.dto.WithdrawDTO">
+		select * from withdraw where withdrawId=#{withdrawId}
+	</select>
+	
+	<insert id="requestWithdraw" parameterType="com.exe.fund.dto.WithdrawDTO">
+		insert into withdraw (withdrawId,userId,amount,bankName,accountNumber,status,
+		requestDate) values(#{withdrawId},#{userId},#{amount},#{bankName},
+		#{accountNumber},#{status},sysdate)
+	</insert>
+	
+	<select id="getMaxNum" resultType="int">
+		select nvl(count(*),0) from withdraw
+	</select>
+	
+	<update id="processWithdraw" parameterType="com.exe.fund.dto.WithdrawDTO">
+		update withdraw set status = #{status},processDate = sysdate 
+		where withdrawId=#{withdrawId}
+	</update>
+	
+	<select id="getPendingLists" resultType="com.exe.fund.dto.WithdrawDTO">
+		select * from withdraw where status='PENDING'
+	</select>
+
+</mapper>

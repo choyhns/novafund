@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+  
+<configuration>
+
+	<typeAliases>
+		<typeAlias type="com.exe.fund.dto.MemberDTO" alias="memberDTO"/>
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="com/exe/fund/mapper/memberMapper.xml"/>
+		<mapper resource="com/exe/fund/mapper/projectMapper.xml"/>
+		<mapper resource="com/exe/fund/mapper/articleMapper.xml"/>
+		<mapper resource="com/exe/fund/mapper/categoryListMapper.xml"/>
+		<mapper resource="com/exe/fund/mapper/rewardMapper.xml"/>
+		<mapper resource="com/exe/fund/mapper/ImageFileMapper.xml"/>
+		<mapper resource="com/exe/fund/mapper/sponMapper.xml"/>
+		<mapper resource="com/exe/fund/mapper/bizCheckMapper.xml"/>
+		<mapper resource="com/exe/fund/mapper/sponDetailMapper.xml"/>
+		<mapper resource="com/exe/fund/mapper/withdrawMapper.xml"/>
+
+	</mappers>
+	
+	
+</configuration>

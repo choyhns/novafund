@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fund.spon">
+
+	<select id="getSponLists" resultType="com.exe.fund.dto.SponAmountDTO" parameterType="String">
+		select * from sponamount where userId=#{userId} order by created desc
+	</select>
+	
+	<select id="getUserAmount" resultType="com.exe.fund.dto.SponAmountDTO" parameterType="String">
+		select sum(amount) amount,numPro from sponamount where userId=#{userId} and paid=0
+		group by numPro
+	</select>
+	
+	
+	
+	<select id="getProjectSpon" resultType="com.exe.fund.dto.SponAmountDTO" parameterType="int">
+		select * from sponamount where numPro=#{numPro} and paid=0
+	</select>
+
+	<update id="updatePaid" parameterType="Map">
+		update sponamount set paid=#{paid} where sponNum=#{sponNum}
+	</update>
+	
+	<select id="getSponData" resultType="com.exe.fund.dto.SponAmountDTO" parameterType="int">
+		select * from sponAmount where sponNum=#{sponNum}
+	</select>
+	
+	<update id="cancelSpon" parameterType="com.exe.fund.dto.SponAmountDTO">
+		update sponamount set paid=#{paid} where sponNum=#{sponNum}
+	</update>
+	
+	<select id="getTotalSponAmount" parameterType="java.lang.Integer" resultType="int">
+		SELECT NVL(SUM(amount),0) FROM sponAmount WHERE
+		 numPro = #{numPro,jdbcType=INTEGER}
+	</select>
+</mapper>
