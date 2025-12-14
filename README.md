@@ -1,12 +1,27 @@
 # NovaFund
 
 ## 프로젝트 소개
-팀 프로젝트로 진행한 펀딩 플랫폼입니다.
+NovaFund는 사용자가 프로젝트를 등록하고 펀딩에 참여할 수 있는
+참여형 펀딩 플랫폼입니다.
+본 프로젝트는 팀 프로젝트로 진행되었으며,
+저는 인증/회원/관리자 기능을 담당했습니다.
 
 ## 기술 스택
-- Spring Framework
+
+###Backend
+- Spring Framework(MVC)
+- Spring Security
+
+###Frontend
 - JSP
+- HTML/CSS/JavaScript
+
+###Database
 - Oracle DB
+
+###Server/Tool
+-Apache Tomcat
+-Git / Github
 
 ## 담당 기능
 - 로그인 / 회원가입
