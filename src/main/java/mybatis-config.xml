@@ -7,7 +7,7 @@
 <configuration>
 
 	<typeAliases>
-		<typeAlias type="com.exe.fund.dto.MemberDTO" alias="memberDTO"/>
+		<package name="com.exe.fund.dto"/>
 	</typeAliases>
 
 	<mappers>
